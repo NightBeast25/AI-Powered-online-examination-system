@@ -19,3 +19,6 @@ class ExamResultResponse(BaseModel):
     grade: str
     result_hash: str
     topic_breakdown: Dict[str, Any]
+
+    class Config:
+        from_attributes = True

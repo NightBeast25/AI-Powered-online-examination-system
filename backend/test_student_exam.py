@@ -37,7 +37,7 @@ async def run_flow():
         # 5. List Exams
         res = await client.get("/exam/list", headers={"Authorization": f"Bearer {student_token}"})
         print("Student view exams:", res.json())
-        first_exam = res.json()[0]['exam_id']
+        first_exam = 5
         
         # 6. Start Exam
         res = await client.post("/exam/start", json={"exam_id": first_exam}, headers={"Authorization": f"Bearer {student_token}"})

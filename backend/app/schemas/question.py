@@ -33,3 +33,6 @@ class AdaptiveQuestionResponse(BaseModel):
     option_c: str
     option_d: str
     difficulty_level: str
+    
+    class Config:
+        from_attributes = True

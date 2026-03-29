@@ -8,9 +8,8 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ role = 'student' }) => {
   const studentLinks = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/exams', icon: BookOpen, label: 'Available Exams' },
-    { to: '/analytics', icon: BarChart3, label: 'Performance' },
+    { to: '/dashboard', icon: BookOpen, label: 'Available Exams' },
+    { to: '/analytics', icon: BarChart3, label: 'Performance Analytics' },
   ];
 
   const adminLinks = [

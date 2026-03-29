@@ -16,6 +16,7 @@ import { Results } from './pages/student/Results';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { QuestionBank } from './pages/admin/QuestionBank';
 import { ExamManager } from './pages/admin/ExamManager';
+import { Performance } from './pages/student/Performance';
 
 // Layout with sidebar for normal pages
 const DashboardLayout = ({ role }: { role?: 'student' | 'admin' }) => {
@@ -75,8 +76,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/lobby/:examId" element={<ExamLobby />} />
           <Route path="/results/:resultId" element={<Results />} />
-          <Route path="/exams" element={<Navigate to="/dashboard" />} />
-          <Route path="/analytics" element={<Navigate to="/dashboard" />} />
+          <Route path="/analytics" element={<Performance />} />
         </Route>
 
         {/* Admin Routes */}

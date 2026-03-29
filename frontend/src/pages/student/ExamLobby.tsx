@@ -33,8 +33,10 @@ export const ExamLobby = () => {
       }
       
       navigate(`/exam/${res.session.session_id}`, { state: { next_question: res.next_question } });
-    } catch (error) {
-      toast.error("Failed to start exam");
+    } catch (error: any) {
+      console.error(error);
+      const msg = error.response?.data?.detail || error.message || "Failed to start exam";
+      toast.error(`Error: ${msg}`);
     } finally {
       setIsLoading(false);
     }
