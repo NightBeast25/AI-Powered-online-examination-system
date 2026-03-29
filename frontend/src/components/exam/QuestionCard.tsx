@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
@@ -15,7 +16,7 @@ interface QuestionCardProps {
   questionNumber: number;
 }
 
-export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onSubmit, questionNumber }) => {
+export const QuestionCard = ({ question, onSubmit, questionNumber }: QuestionCardProps) => {
   const [selected, setSelected] = useState<string | null>(null);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { createQuestion, getAllQuestions, deleteQuestion } from '../../api/admin';
@@ -42,7 +42,7 @@ export const QuestionBank = () => {
     }
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreate = async (e: any) => {
     e.preventDefault();
 
     setLoading(true);

@@ -40,7 +40,29 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
     ))
     existing = res.scalar_one_or_none()
     if existing:
-        return {"session_id": existing.session_id, "message": "Resumed existing session", "start_time": existing.start_time}
+        # Fetch answered question ids for this session
+        ans_res = await db.execute(select(ResponseLog.question_id).where(ResponseLog.session_id == existing.session_id))
+        answered_ids = [r[0] for r in ans_res.all()]
+        
+        # Find next unanswered question for this topic
+        if answered_ids:
+            q_res = await db.execute(
+                select(Question).where(
+                    Question.topic_tag == exam.subject,
+                    Question.question_id.not_in(answered_ids)
+                ).order_by(Question.difficulty_b.asc()).limit(1)
+            )
+        else:
+            q_res = await db.execute(
+                select(Question).where(Question.topic_tag == exam.subject)
+                .order_by(Question.difficulty_b.asc()).limit(1)
+            )
+        next_q = q_res.scalar_one_or_none()
+        
+        return {
+            "session": {"session_id": existing.session_id, "start_time": existing.start_time},
+            "next_question": AdaptiveQuestionResponse.model_validate(next_q) if next_q else None
+        }
         
     session = ExamSession(
         student_id=current_user.student_id,

@@ -6,7 +6,7 @@ export const getDashboardStats = async () => {
 };
 
 export const getExams = async () => {
-  const res = await api.get('/exam/list'); // Exams are public to both admin and student
+  const res = await api.get('/admin/exams');
   return res.data;
 };
 

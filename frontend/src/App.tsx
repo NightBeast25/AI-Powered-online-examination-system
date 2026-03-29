@@ -15,10 +15,10 @@ import { ExamInterface } from './pages/student/ExamInterface';
 import { Results } from './pages/student/Results';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { QuestionBank } from './pages/admin/QuestionBank';
-
 import { ExamManager } from './pages/admin/ExamManager';
 
-const ProtectedRoute = ({ role }: { role?: 'student' | 'admin' }) => {
+// Layout with sidebar for normal pages
+const DashboardLayout = ({ role }: { role?: 'student' | 'admin' }) => {
   const user = useAuthStore(s => s.user);
   if (!user) return <Navigate to="/login" replace />;
   if (role && user.role !== role) return <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} replace />;
@@ -36,6 +36,13 @@ const ProtectedRoute = ({ role }: { role?: 'student' | 'admin' }) => {
       </div>
     </div>
   );
+};
+
+// Minimal auth guard — no sidebar/navbar (for fullscreen exam)
+const AuthOnly = () => {
+  const user = useAuthStore(s => s.user);
+  if (!user) return <Navigate to="/login" replace />;
+  return <Outlet />;
 };
 
 export default function App() {
@@ -57,12 +64,14 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin-register" element={<AdminRegister />} />
-        
-        {/* Fullscreen standalone test interface */}
-        <Route path="/exam/:session_id" element={<ExamInterface />} />
+
+        {/* Fullscreen exam — auth required but no chrome */}
+        <Route element={<AuthOnly />}>
+          <Route path="/exam/:session_id" element={<ExamInterface />} />
+        </Route>
 
         {/* Student Routes */}
-        <Route element={<ProtectedRoute role="student" />}>
+        <Route element={<DashboardLayout role="student" />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/lobby/:examId" element={<ExamLobby />} />
           <Route path="/results/:resultId" element={<Results />} />
@@ -71,7 +80,7 @@ export default function App() {
         </Route>
 
         {/* Admin Routes */}
-        <Route element={<ProtectedRoute role="admin" />}>
+        <Route element={<DashboardLayout role="admin" />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/questions" element={<QuestionBank />} />
           <Route path="/admin/exams" element={<ExamManager />} />

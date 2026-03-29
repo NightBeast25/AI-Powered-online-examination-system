@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card } from '../../components/ui/Card';
 import { getDashboardStats, getStudentPerformance, getAllStudents, deleteStudent } from '../../api/admin';
 import { useAuthStore } from '../../store/authStore';

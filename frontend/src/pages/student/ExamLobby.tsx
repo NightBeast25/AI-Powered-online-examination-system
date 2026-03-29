@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -18,6 +18,12 @@ export const ExamLobby = () => {
     try {
       const res = await startExam(parseInt(examId!));
       
+      if (!res.next_question) {
+        toast.error('No questions available for this exam topic yet. Ask your admin to upload questions.');
+        setIsLoading(false);
+        return;
+      }
+
       setSession(res.session.session_id);
       
       try {
@@ -51,7 +57,7 @@ export const ExamLobby = () => {
         <ul className="space-y-4 mb-8 text-sm">
           <li className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-background flex items-center justify-center text-primary"><Clock size={16} /></div>
-            <span>You will have 30 minutes to complete the test.</span>
+            <span>You will have a limited time to complete the test.</span>
           </li>
           <li className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-background flex items-center justify-center text-primary"><Target size={16} /></div>

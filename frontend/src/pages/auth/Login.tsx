@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -13,7 +13,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.login);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
     try {
