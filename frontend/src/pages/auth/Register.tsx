@@ -71,9 +71,14 @@ export const Register = () => {
             Sign Up
           </Button>
         </form>
-        <p className="text-center mt-6 text-sm text-textMuted">
-          Already have an account? <Link to="/login" className="text-primary hover:underline">Sign In</Link>
-        </p>
+        <div className="text-center mt-6 space-y-2">
+          <p className="text-sm text-textMuted">
+            Already have an account? <Link to="/login" className="text-primary hover:underline font-medium">Sign In</Link>
+          </p>
+          <p className="text-xs text-textMuted/60">
+            Are you a Teacher/Admin? <Link to="/admin-register" className="text-primary/80 hover:underline">Create an Admin Account</Link>
+          </p>
+        </div>
       </Card>
     </div>
   );

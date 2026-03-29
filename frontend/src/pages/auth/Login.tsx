@@ -67,9 +67,14 @@ export const Login = () => {
             Sign In
           </Button>
         </form>
-        <p className="text-center mt-6 text-sm text-textMuted">
-          Don't have an account? <Link to="/register" className="text-primary hover:underline">Register</Link>
-        </p>
+        <div className="text-center mt-6 space-y-2">
+          <p className="text-sm text-textMuted">
+            Don't have an account? <Link to="/register" className="text-primary hover:underline font-medium">Register as Student</Link>
+          </p>
+          <p className="text-xs text-textMuted/60">
+            Are you a Teacher/Admin? <Link to="/admin-register" className="text-primary/80 hover:underline">Create an Admin Account</Link>
+          </p>
+        </div>
       </Card>
     </div>
   );
