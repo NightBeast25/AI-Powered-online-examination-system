@@ -46,15 +46,17 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
         
         # Find next unanswered question for this topic
         if answered_ids:
+            from sqlalchemy.sql import func
             q_res = await db.execute(
                 select(Question).where(
-                    Question.topic_tag == exam.subject,
+                    func.lower(Question.topic_tag) == func.lower(exam.subject),
                     Question.question_id.not_in(answered_ids)
                 ).order_by(Question.difficulty_b.asc()).limit(1)
             )
         else:
+            from sqlalchemy.sql import func
             q_res = await db.execute(
-                select(Question).where(Question.topic_tag == exam.subject)
+                select(Question).where(func.lower(Question.topic_tag) == func.lower(exam.subject))
                 .order_by(Question.difficulty_b.asc()).limit(1)
             )
         next_q = q_res.scalar_one_or_none()
@@ -75,7 +77,8 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
     await db.commit()
     await db.refresh(session)
     
-    res = await db.execute(select(Question).where(Question.topic_tag == exam.subject).order_by(Question.difficulty_b.asc()).limit(1))
+    from sqlalchemy.sql import func
+    res = await db.execute(select(Question).where(func.lower(Question.topic_tag) == func.lower(exam.subject)).order_by(Question.difficulty_b.asc()).limit(1))
     first_q = res.scalar_one_or_none()
     
     return {
@@ -122,8 +125,9 @@ async def submit_answer(req: AnswerSubmit, db: AsyncSession = Depends(get_db), c
     exam_res = await db.execute(select(Exam).where(Exam.exam_id == session.exam_id))
     exam = exam_res.scalar_one()
     
+    from sqlalchemy.sql import func
     res = await db.execute(select(Question).where(
-        Question.topic_tag == exam.subject,
+        func.lower(Question.topic_tag) == func.lower(exam.subject),
         Question.question_id.not_in(answered_q_ids)
     ))
     available_qs = res.scalars().all()
