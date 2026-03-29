@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, Integer
+from sqlalchemy import select, func, Integer, case
 from app.models.response import ResponseLog
 from app.models.question import Question
 from app.models.session import ExamSession
@@ -10,7 +10,7 @@ async def get_student_topic_performance(db: AsyncSession, student_id: int):
         select(
             Question.topic_tag,
             func.count(ResponseLog.response_id).label("total_attempted"),
-            func.sum(func.cast(ResponseLog.is_correct, Integer)).label("total_correct"),
+            func.sum(case((ResponseLog.is_correct == True, 1), else_=0)).label("total_correct"),
             func.avg(ResponseLog.time_taken_secs).label("avg_time")
         )
         .join(Question, ResponseLog.question_id == Question.question_id)
