@@ -1,0 +1,82 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install backend lint tools
+        run: pip install black flake8
+      - name: Lint Backend
+        run: |
+          black --check backend/
+          flake8 backend/
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Frontend deps
+        run: cd frontend && npm install
+      - name: Lint Frontend
+        run: cd frontend && npm run lint
+
+  test:
+    needs: lint-and-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run Backend Tests
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install pytest httpx
+          pytest tests/
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run Frontend Tests
+        run: |
+          cd frontend
+          npm install
+          npm run test -- --run
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+      - name: Build Backend Docker Image
+        run: docker build -t backend-image ./backend
+      - name: Build Frontend Docker Image
+        run: docker build -t frontend-image ./frontend
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Server
+        run: |
+          echo "Deploying to production... (Requires SSH setup)"
+          # Example SSH deployment:
+          # ssh user@host "cd /var/www/adaptive-exam-system && git pull && docker-compose up -d --build"
