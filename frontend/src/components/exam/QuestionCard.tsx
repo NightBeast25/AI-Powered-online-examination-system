@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 
 interface QuestionCardProps {
   question: {
+    question_id: number;
     question_text: string;
     option_a: string;
     option_b: string;
@@ -45,7 +46,7 @@ export const QuestionCard = ({ question, onSubmit, questionNumber }: QuestionCar
 
   return (
     <motion.div
-      key={question.question_text} // Re-animate on question change
+      key={question.question_id || question.question_text} // Re-animate on question change
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -50 }}
