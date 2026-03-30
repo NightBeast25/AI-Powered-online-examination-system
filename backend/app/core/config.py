@@ -14,14 +14,21 @@ class Settings(BaseSettings):
         env_file = ".env"
         extra = "ignore"
 
-    # 🔥 This fixes Render CORS parsing issue
-    def model_post_init(self, __context):
-        if isinstance(self.CORS_ORIGINS, str):
+    @property
+    def cors_list(self) -> List[str]:
+        if not self.CORS_ORIGINS or self.CORS_ORIGINS == "*":
+            return ["*"]
+        if isinstance(self.CORS_ORIGINS, str) and self.CORS_ORIGINS.startswith("[") and self.CORS_ORIGINS.endswith("]"):
             try:
-                self.CORS_ORIGINS = json.loads(self.CORS_ORIGINS)
+                import json
+                return json.loads(self.CORS_ORIGINS)
             except Exception:
-                # fallback: convert single string to list
-                self.CORS_ORIGINS = [self.CORS_ORIGINS]
+                pass
+        if isinstance(self.CORS_ORIGINS, str) and "," in self.CORS_ORIGINS:
+            return [x.strip() for x in self.CORS_ORIGINS.split(",") if x.strip()]
+        if isinstance(self.CORS_ORIGINS, list):
+            return self.CORS_ORIGINS
+        return [self.CORS_ORIGINS]
 
 
 settings = Settings()
