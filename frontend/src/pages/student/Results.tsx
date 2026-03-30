@@ -25,23 +25,34 @@ export const Results = () => {
         <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
           <Trophy size={40} />
         </div>
-        <h1 className="text-4xl font-bold mb-4">Exam Completed!</h1>
-        <p className="text-textMuted text-lg">Detailed performance report. Certificate Hash: <code className="text-xs bg-surface p-1 rounded font-mono break-all">{result.result_hash}</code></p>
+        <h1 className="text-4xl font-extrabold mb-4 animate-slide-up">Exam Completed!</h1>
+        <p className="text-textMuted text-lg">Detailed performance report. Certificate Hash: <code className="text-xs bg-surface p-1 rounded font-mono break-all text-primary/80">{result.result_hash}</code></p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="p-6 text-center border-t-4 border-t-secondary">
-          <div className="text-textMuted mb-2 font-medium">Final Grade</div>
-          <div className="text-5xl font-bold text-secondary">{result.grade}</div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Card className="p-6 text-center border-t-4 border-t-secondary bg-surface/50 backdrop-blur-md">
+          <div className="text-textMuted mb-2 font-medium flex items-center justify-center gap-2">Final Grade</div>
+          <div className="text-5xl font-extrabold text-secondary drop-shadow-sm flex items-center justify-center gap-2">
+            {result.grade} {['A+', 'A'].includes(result.grade) && <span className="text-4xl animate-bounce">🔥</span>}
+          </div>
         </Card>
-        <Card className="p-6 text-center border-t-4 border-t-primary">
-          <div className="text-textMuted mb-2 font-medium">Ability Score (Theta)</div>
-          <div className="text-5xl font-bold text-primary">{result.theta_score.toFixed(2)}</div>
+        
+        <Card className="p-6 text-center border-t-4 border-t-success bg-surface/50 backdrop-blur-md">
+          <div className="text-textMuted mb-2 font-medium flex items-center justify-center gap-2">Percentage</div>
+          <div className="text-5xl font-extrabold text-success drop-shadow-sm">{result.percentile.toFixed(1)}%</div>
+          <div className="text-xs text-textMuted mt-2">Overall Accuracy</div>
         </Card>
-        <Card className="p-6 text-center border-t-4 border-t-success">
-          <div className="text-textMuted mb-2 font-medium">Percentile</div>
-          <div className="text-5xl font-bold text-success">{result.percentile.toFixed(1)}%</div>
-          <div className="text-xs text-textMuted mt-2">Better than {result.percentile.toFixed(1)}% of test takers</div>
+        
+        <Card className="p-6 text-center border-t-4 border-t-primary bg-surface/50 backdrop-blur-md">
+          <div className="text-textMuted mb-2 font-medium flex items-center justify-center gap-2">Correct Answers</div>
+          <div className="text-5xl font-extrabold text-primary drop-shadow-sm">{result.topic_breakdown?.correct_answers || 0}</div>
+          <div className="text-xs text-textMuted mt-2">out of {result.topic_breakdown?.total_questions || 0} total</div>
+        </Card>
+
+        <Card className="p-6 text-center border-t-4 border-t-warning bg-surface/50 backdrop-blur-md">
+          <div className="text-textMuted mb-2 font-medium flex items-center justify-center gap-2">Adaptive Theta</div>
+          <div className="text-5xl font-extrabold text-warning drop-shadow-sm">{result.theta_score.toFixed(2)}</div>
+          <div className="text-xs text-textMuted mt-2">True Ability Estimate</div>
         </Card>
       </div>
 

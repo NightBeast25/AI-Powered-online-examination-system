@@ -11,23 +11,48 @@ async def generate_result(db: AsyncSession, session: ExamSession) -> Result:
     # Use timezone-aware UTC datetime
     generated_at = datetime.now(timezone.utc)
     
-    res = await db.execute(select(ExamSession.current_theta).where(ExamSession.exam_id == session.exam_id, ExamSession.status == 'completed'))
-    all_thetas = res.scalars().all()
+    from app.models.response import ResponseLog
     
-    percentile = theta_to_percentile(session.current_theta, list(all_thetas))
-    grade = theta_to_grade(session.current_theta)
+    # Calculate Correct Percentage
+    res_logs = await db.execute(select(ResponseLog).where(ResponseLog.session_id == session.session_id))
+    responses = res_logs.scalars().all()
     
-    hash_input = f"{session.session_id}{session.student_id}{session.current_theta}{generated_at.isoformat()}"
+    total_answered = len(responses)
+    correct_answers = sum(1 for r in responses if r.is_correct)
+    
+    # Calculate exact percentage
+    percentage = (correct_answers / total_answered * 100) if total_answered > 0 else 0
+    
+    # Map percentage to grade explicitly based on user criteria
+    if percentage >= 90:
+        grade = "A+"
+    elif percentage >= 80:
+        grade = "A"
+    elif percentage >= 70:
+        grade = "B"
+    elif percentage >= 60:
+        grade = "C"
+    elif percentage >= 50:
+        grade = "D"
+    else:
+        grade = "F"
+    
+    hash_input = f"{session.session_id}{session.student_id}{percentage}{generated_at.isoformat()}"
     result_hash = hashlib.sha256(hash_input.encode('utf-8')).hexdigest()
     
     # Generate actual topic breakdown properly via the service
     topics = await get_student_topic_performance(db, session.student_id)
-    topic_breakdown = {"topics": topics}
+    topic_breakdown = {
+        "topics": topics,
+        "correct_answers": correct_answers,
+        "total_questions": total_answered,
+        "percentage": percentage
+    }
     
     result = Result(
         session_id=session.session_id,
         theta_score=session.current_theta,
-        percentile=percentile,
+        percentile=percentage, # Hijack percentile to output exactly 'percentage' in the schema safely
         grade=grade,
         topic_breakdown=topic_breakdown,
         result_hash=result_hash,
