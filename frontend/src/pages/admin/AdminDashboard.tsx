@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../../components/ui/Card';
-import { getDashboardStats, getStudentPerformance, getAllStudents, deleteStudent } from '../../api/admin';
+import { getDashboardStats, getStudentPerformance, getAllStudents, deleteStudent, deleteResult } from '../../api/admin';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
+import { Trash2 } from 'lucide-react';
 
 export const AdminDashboard = () => {
   const user = useAuthStore(s => s.user);
@@ -28,6 +29,17 @@ export const AdminDashboard = () => {
       loadData();
     } catch (err) {
       toast.error('Failed to delete student');
+    }
+  };
+
+  const handleDeleteResult = async (id: number) => {
+    if (!window.confirm('Are you certain you want to delete this result? The student will be allowed to retake the test.')) return;
+    try {
+      await deleteResult(id);
+      toast.success('Exam result deleted successfully');
+      loadData();
+    } catch (err) {
+      toast.error('Failed to delete result');
     }
   };
 
@@ -138,6 +150,7 @@ export const AdminDashboard = () => {
                   <th className="py-3 px-6 font-semibold text-sm">Percentage</th>
                   <th className="py-3 px-6 font-semibold text-sm">Grade</th>
                   <th className="py-3 px-6 font-semibold text-sm">Date</th>
+                  <th className="py-3 px-6 font-semibold text-sm text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -154,7 +167,7 @@ export const AdminDashboard = () => {
                     <td className="py-3 px-6">{Math.round(row.percentage)}%</td>
                     <td className="py-3 px-6">
                       <span className={`px-2 py-1 rounded text-xs font-bold ${
-                        ['A','B'].includes(row.grade) ? 'bg-green-500/20 text-green-400' : 
+                        ['A+','A','B'].includes(row.grade) ? 'bg-green-500/20 text-green-400' : 
                         row.grade === 'C' ? 'bg-yellow-500/20 text-yellow-400' : 
                         'bg-red-500/20 text-red-400'
                       }`}>
@@ -163,6 +176,15 @@ export const AdminDashboard = () => {
                     </td>
                     <td className="py-3 px-6 text-sm text-textMuted">
                       {new Date(row.date).toLocaleString()}
+                    </td>
+                    <td className="py-3 px-6 text-right">
+                      <button 
+                        title="Delete Exam Attempt"
+                        onClick={() => handleDeleteResult(row.result_id)}
+                        className="p-2 bg-danger/10 text-danger border border-danger/20 rounded-lg hover:bg-danger hover:text-white transition-all transform hover:scale-105"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))}

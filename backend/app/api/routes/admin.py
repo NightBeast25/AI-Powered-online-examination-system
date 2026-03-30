@@ -137,4 +137,21 @@ async def delete_student(student_id: int, db: AsyncSession = Depends(get_db), ad
     await db.commit()
     return {"message": "Student deleted successfully"}
 
-
+@router.delete("/results/{result_id}")
+async def delete_result(result_id: int, db: AsyncSession = Depends(get_db), admin = Depends(get_current_admin)):
+    res = await db.execute(select(Result).where(Result.result_id == result_id))
+    result = res.scalar_one_or_none()
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found")
+        
+    session_res = await db.execute(select(ExamSession).where(ExamSession.session_id == result.session_id))
+    session = session_res.scalar_one_or_none()
+    
+    if session:
+        await db.delete(session) # Rely on CASCADE for ResponseLogs and Results
+    else:
+        await db.delete(result) # Fallback if session somehow orphaned
+        
+    await db.commit()
+    return {"message": "Student exam result deleted successfully"}

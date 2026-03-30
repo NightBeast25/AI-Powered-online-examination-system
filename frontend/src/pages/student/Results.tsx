@@ -95,6 +95,59 @@ export const Results = () => {
         </Card>
       </div>
 
+      <Card className="p-8 mb-12 bg-surface/80 backdrop-blur border border-border/50 rounded-2xl shadow-xl">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold flex items-center gap-2">📊 Detailed Question Analysis</h2>
+          <div className="bg-primary/10 text-primary px-4 py-2 rounded-lg font-bold flex items-center gap-2">
+            ⏱️ Total Time: {result.detailed_responses?.reduce((acc: number, r: any) => acc + r.time_taken_secs, 0) || 0}s
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto rounded-xl border border-border/40">
+          <table className="w-full text-left">
+            <thead className="bg-background/80 text-textMuted text-sm font-semibold sticky top-0">
+              <tr>
+                <th className="py-4 px-6">Q#</th>
+                <th className="py-4 px-6">Question Preview</th>
+                <th className="py-4 px-6">Your Option</th>
+                <th className="py-4 px-6 text-center">Time Spent</th>
+                <th className="py-4 px-6 text-center">Result</th>
+                <th className="py-4 px-6 text-right">Difficulty</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/30">
+              {result.detailed_responses?.map((r: any) => (
+                <tr key={r.order} className="hover:bg-background/40 transition-colors">
+                  <td className="py-4 px-6 font-mono text-textMuted">{r.order}</td>
+                  <td className="py-4 px-6 font-medium max-w-xs truncate" title={r.question_text}>
+                    {r.question_text}
+                  </td>
+                  <td className="py-4 px-6 font-mono font-bold text-center">
+                    <span className="bg-surface border border-border/60 rounded px-2 py-1">{r.selected_option}</span>
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <div className="flex items-center justify-center gap-1 text-sm text-textMuted">
+                      ⏱️ {r.time_taken_secs}s
+                    </div>
+                  </td>
+                  <td className="py-4 px-6 text-center text-xl">
+                    {r.is_correct ? '✅' : '❌'}
+                  </td>
+                  <td className="py-4 px-6 text-right text-xs font-mono text-textMuted">
+                    {r.difficulty.toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+              {(!result.detailed_responses || result.detailed_responses.length === 0) && (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-textMuted">No detailed response telemetry available.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
       <div className="text-center">
         <Link to="/dashboard">
           <Button size="lg" variant="outline">Return to Dashboard</Button>

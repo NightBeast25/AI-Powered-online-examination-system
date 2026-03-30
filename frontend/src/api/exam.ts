@@ -20,3 +20,7 @@ export const endExam = async (session_id: number) => {
   const res = await api.post(`/exam/end?session_id=${session_id}`);
   return res.data;
 };
+export const checkAttemptStatus = async (exam_id: number) => {
+  const res = await api.get(`/exam/attempt-status/${exam_id}`);
+  return res.data;
+};

@@ -16,7 +16,40 @@ async def get_result_by_id(result_id: int, db: AsyncSession = Depends(get_db), c
     result = res.scalar_one_or_none()
     if not result:
         raise HTTPException(status_code=404, detail="Result not found")
-    return result
+        
+    from app.models.response import ResponseLog
+    from app.models.question import Question
+    
+    logs_res = await db.execute(
+        select(ResponseLog, Question)
+        .join(Question)
+        .where(ResponseLog.session_id == result.session_id)
+        .order_by(ResponseLog.question_order.asc())
+    )
+    
+    detailed_responses = []
+    for log, question in logs_res.all():
+        detailed_responses.append({
+            "question_text": question.question_text,
+            "selected_option": log.selected_option or "",
+            "is_correct": log.is_correct,
+            "time_taken_secs": log.time_taken_secs,
+            "difficulty": question.difficulty_b,
+            "order": log.question_order
+        })
+        
+    result_dict = {
+        "session_id": result.session_id,
+        "theta_score": result.theta_score,
+        "percentage": result.percentage,
+        "grade": result.grade,
+        "result_hash": result.result_hash,
+        "topic_breakdown": result.topic_breakdown,
+        "generated_at": result.generated_at,
+        "detailed_responses": detailed_responses
+    }
+    
+    return result_dict
 
 from app.models.session import ExamSession
 

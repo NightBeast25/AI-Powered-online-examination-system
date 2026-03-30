@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { startExam } from '../../api/exam';
+import { startExam, checkAttemptStatus } from '../../api/exam';
 import { useExamStore } from '../../store/examStore';
 import { AlertTriangle, Clock, Target } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -12,6 +12,15 @@ export const ExamLobby = () => {
   const navigate = useNavigate();
   const setSession = useExamStore(s => s.setSession);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasAttempted, setHasAttempted] = useState(false);
+
+  useEffect(() => {
+    if (examId) {
+      checkAttemptStatus(parseInt(examId)).then(data => {
+        setHasAttempted(data.attempted);
+      }).catch(console.error);
+    }
+  }, [examId]);
   
   const handleStart = async () => {
     setIsLoading(true);
@@ -67,9 +76,16 @@ export const ExamLobby = () => {
           </li>
         </ul>
 
-        <Button size="lg" className="w-full" onClick={handleStart} isLoading={isLoading}>
-          Acknowledge & Start Exam
-        </Button>
+        {hasAttempted ? (
+          <div className="bg-danger/10 border border-danger/30 rounded-xl p-6 text-center">
+            <h4 className="font-bold text-danger text-lg mb-2">Access Denied</h4>
+            <p className="text-danger/80">You have already attempted this test. Re-attempt is not allowed.</p>
+          </div>
+        ) : (
+          <Button size="lg" className="w-full" onClick={handleStart} isLoading={isLoading}>
+            Acknowledge & Start Exam
+          </Button>
+        )}
       </Card>
     </div>
   );

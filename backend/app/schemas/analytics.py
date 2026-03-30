@@ -12,6 +12,14 @@ class StudentAnalytics(BaseModel):
     avg_theta: float
     topics: List[TopicPerformance]
 
+class DetailedResponse(BaseModel):
+    question_text: str
+    selected_option: str
+    is_correct: bool
+    time_taken_secs: int
+    difficulty: float
+    order: int
+
 class ExamResultResponse(BaseModel):
     session_id: int
     theta_score: float
@@ -19,6 +27,8 @@ class ExamResultResponse(BaseModel):
     grade: str
     result_hash: str
     topic_breakdown: Dict[str, Any]
+    detailed_responses: List[DetailedResponse] = []
+    generated_at: datetime
 
     class Config:
         from_attributes = True

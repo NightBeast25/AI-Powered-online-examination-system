@@ -29,10 +29,29 @@ async def get_exam(exam_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Exam not found")
     return exam
 
+@router.get("/attempt-status/{exam_id}")
+async def check_attempt_status(exam_id: int, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+    res = await db.execute(select(ExamSession).where(
+        ExamSession.student_id == current_user.student_id,
+        ExamSession.exam_id == exam_id,
+        ExamSession.status == 'completed'
+    ))
+    return {"attempted": res.scalar_one_or_none() is not None}
+
 @router.post("/start")
 async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
     exam = await get_exam(req.exam_id, db)
     
+    # Check if student already completely finished this test
+    completed_res = await db.execute(select(ExamSession).where(
+        ExamSession.student_id == current_user.student_id,
+        ExamSession.exam_id == req.exam_id,
+        ExamSession.status == 'completed'
+    ))
+    if completed_res.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="You have already attempted this test. Re-attempt is not allowed.")
+    
+    # Check for active abandoned sessions
     res = await db.execute(select(ExamSession).where(
         ExamSession.student_id == current_user.student_id,
         ExamSession.exam_id == req.exam_id,
@@ -40,11 +59,9 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
     ))
     existing = res.scalar_one_or_none()
     if existing:
-        # ALWAYS force a fresh session to ensure unique question flow and strict reset
         existing.status = 'abandoned'
         existing.end_time = datetime.now(timezone.utc)
         await db.commit()
-        # Continue silently so it generates a completely new session right below!
         
     session = ExamSession(
         student_id=current_user.student_id,

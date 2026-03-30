@@ -49,3 +49,8 @@ export const deleteStudent = async (studentId: number) => {
   const res = await api.delete(`/admin/students/${studentId}`);
   return res.data;
 };
+
+export const deleteResult = async (resultId: number) => {
+  const res = await api.delete(`/admin/results/${resultId}`);
+  return res.data;
+};
