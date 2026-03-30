@@ -30,5 +30,12 @@ class Settings(BaseSettings):
             return self.CORS_ORIGINS
         return [self.CORS_ORIGINS]
 
+    def model_post_init(self, __context):
+        # Automatically strip any accidental quote marks or spaces the user added in Render
+        if self.DATABASE_URL:
+            self.DATABASE_URL = self.DATABASE_URL.strip().strip('"').strip("'")
+        if self.REDIS_URL:
+            self.REDIS_URL = self.REDIS_URL.strip().strip('"').strip("'")
+
 
 settings = Settings()
