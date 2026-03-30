@@ -125,13 +125,17 @@ async def submit_answer(req: AnswerSubmit, db: AsyncSession = Depends(get_db), c
     exam_res = await db.execute(select(Exam).where(Exam.exam_id == session.exam_id))
     exam = exam_res.scalar_one()
     
-    from sqlalchemy.sql import func
-    res = await db.execute(select(Question).where(
-        func.lower(Question.topic_tag) == func.lower(exam.subject),
-        Question.question_id.not_in(answered_q_ids)
-    ))
-    available_qs = res.scalars().all()
-    next_q = select_next_question(theta_after, available_qs)
+    # 🌟 INFINITE LOOP FIX: Enforce the exam max question limit!
+    if len(answered_q_ids) >= exam.total_questions:
+        next_q = None
+    else:
+        from sqlalchemy.sql import func
+        res = await db.execute(select(Question).where(
+            func.lower(Question.topic_tag) == func.lower(exam.subject),
+            Question.question_id.not_in(answered_q_ids)
+        ))
+        available_qs = res.scalars().all()
+        next_q = select_next_question(theta_after, available_qs)
     
     question.times_used += 1
     if is_correct:
