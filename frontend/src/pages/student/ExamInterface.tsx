@@ -71,17 +71,38 @@ export const ExamInterface = () => {
       </div>
 
       <main className="pt-24 pb-24 px-4 h-screen overflow-y-auto">
-        {isSubmitting ? (
-          <div className="h-full flex items-center justify-center">
-            <Loader />
+        <div className="max-w-3xl mx-auto rounded-xl">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <span className="text-primary text-2xl">🎯</span> 
+              Question {questionNumber} of {useExamStore.getState().totalQuestions}
+            </h2>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-32 bg-border rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{ width: `${(questionNumber / (useExamStore.getState().totalQuestions || 10)) * 100}%` }}
+                />
+              </div>
+              <span className="text-sm font-medium text-textMuted ml-2">{Math.round((questionNumber / (useExamStore.getState().totalQuestions || 10)) * 100)}%</span>
+            </div>
           </div>
-        ) : (
-          <QuestionCard
-            question={question}
-            questionNumber={questionNumber}
-            onSubmit={onSubmit}
-          />
-        )}
+          
+          <div className="bg-surface/50 p-1 rounded-2xl mb-4 border border-border shadow-sm">
+            {isSubmitting ? (
+              <div className="h-64 flex flex-col items-center justify-center gap-3">
+                <Loader />
+                <span className="text-textMuted text-sm animate-pulse">Calculating adaptive difficulty... ✨</span>
+              </div>
+            ) : (
+              <QuestionCard
+                question={question}
+                questionNumber={questionNumber}
+                onSubmit={onSubmit}
+              />
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );

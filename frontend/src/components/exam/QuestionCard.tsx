@@ -47,49 +47,57 @@ export const QuestionCard = ({ question, onSubmit, questionNumber }: QuestionCar
   return (
     <motion.div
       key={question.question_id || question.question_text} // Re-animate on question change
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -30 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className="w-full max-w-3xl mx-auto"
     >
-      <Card className="p-8">
+      <Card className="p-8 border-t-4 border-t-primary shadow-[0_0_50px_-12px_rgba(59,130,246,0.15)] bg-surface/80 backdrop-blur-xl">
         <div className="mb-6 flex items-center justify-between">
-          <span className="text-sm font-semibold text-textMuted uppercase tracking-wider">Question {questionNumber}</span>
+          <span className="text-sm font-bold text-primary uppercase tracking-widest flex items-center gap-2">
+             📝 Question {questionNumber}
+          </span>
         </div>
-        <h2 className="text-2xl font-medium text-textPrimary mb-8 leading-relaxed">
+        <h2 className="text-2xl font-bold text-textPrimary mb-8 leading-relaxed">
           {question.question_text}
         </h2>
-        <div className="space-y-3 mb-8">
+        <div className="space-y-4 mb-8">
           {options.map((opt) => (
             <button
               key={opt.id}
               onClick={() => setSelected(opt.id)}
-              className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+              className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-300 transform active:scale-[0.99] ${
                 selected === opt.id 
-                ? 'border-primary bg-primary/5 text-primary' 
-                : 'border-border hover:border-textMuted text-textPrimary bg-surface'
+                ? 'border-primary bg-primary/10 shadow-[0_0_25px_-5px_rgba(59,130,246,0.3)] ring-2 ring-primary/20' 
+                : 'border-white/5 hover:border-white/20 hover:bg-white/5 text-textPrimary bg-surface'
               }`}
             >
-              <div className="flex items-center gap-4">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-semibold text-sm transition-colors ${
-                  selected === opt.id ? 'bg-primary text-white' : 'bg-background text-textMuted'
+              <div className="flex items-center gap-5">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-all duration-300 ${
+                  selected === opt.id ? 'bg-primary text-white scale-110 shadow-lg shadow-primary/40' : 'bg-background text-textMuted'
                 }`}>
                   {opt.id}
                 </div>
-                <span className="text-lg">{opt.text}</span>
+                <span className={`text-lg transition-colors ${selected === opt.id ? 'text-primary font-medium' : ''}`}>
+                  {opt.text}
+                </span>
+                
+                {selected === opt.id && (
+                  <span className="ml-auto text-xl animate-fade-in">✅</span>
+                )}
               </div>
             </button>
           ))}
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-4 border-t border-border/50">
           <Button 
             size="lg" 
             disabled={!selected} 
             onClick={() => selected && onSubmit(selected)}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto mt-2"
           >
-            Submit Answer <span className="ml-2 text-xs opacity-75 hidden sm:inline">(Press Enter)</span>
+            Submit Answer <span className="ml-2 text-xs opacity-75 hidden sm:inline">(Press Enter ↵)</span>
           </Button>
         </div>
       </Card>

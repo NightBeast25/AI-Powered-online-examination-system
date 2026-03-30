@@ -44,6 +44,13 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
         ans_res = await db.execute(select(ResponseLog.question_id).where(ResponseLog.session_id == existing.session_id))
         answered_ids = [r[0] for r in ans_res.all()]
         
+        # 🌟 Re-attempt Infinite Loop Edge-Case Fix
+        if len(answered_ids) >= exam.total_questions:
+            existing.status = 'completed'
+            existing.end_time = datetime.now(timezone.utc)
+            await db.commit()
+            raise HTTPException(status_code=400, detail="Previous attempt was stuck. It has been auto-completed. Please click 'Start Test' again to begin a fresh attempt.")
+            
         # Find next unanswered question for this topic
         if answered_ids:
             from sqlalchemy.sql import func
@@ -62,7 +69,11 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
         next_q = q_res.scalar_one_or_none()
         
         return {
-            "session": {"session_id": existing.session_id, "start_time": existing.start_time},
+            "session": {
+                "session_id": existing.session_id, 
+                "start_time": existing.start_time,
+                "total_questions": exam.total_questions
+            },
             "next_question": AdaptiveQuestionResponse.model_validate(next_q) if next_q else None
         }
         
@@ -82,7 +93,11 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
     first_q = res.scalar_one_or_none()
     
     return {
-        "session": {"session_id": session.session_id, "start_time": session.start_time},
+        "session": {
+            "session_id": session.session_id, 
+            "start_time": session.start_time,
+            "total_questions": exam.total_questions
+        },
         "next_question": AdaptiveQuestionResponse.model_validate(first_q) if first_q else None
     }
 

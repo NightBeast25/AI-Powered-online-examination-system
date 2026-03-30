@@ -24,7 +24,7 @@ export const ExamLobby = () => {
         return;
       }
 
-      setSession(res.session.session_id);
+      setSession(res.session.session_id, res.session.total_questions || 10);
       
       try {
         await document.documentElement.requestFullscreen();
