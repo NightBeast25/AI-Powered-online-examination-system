@@ -82,7 +82,7 @@ async def get_student_performance(db: AsyncSession = Depends(get_db), admin = De
             "student_email": st.email,
             "exam_title": e.title,
             "theta_score": r.theta_score,
-            "percentile": r.percentile,
+            "percentage": r.percentage,
             "grade": r.grade,
             "date": r.generated_at
         })

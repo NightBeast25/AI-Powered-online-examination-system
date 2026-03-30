@@ -40,42 +40,11 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
     ))
     existing = res.scalar_one_or_none()
     if existing:
-        # Fetch answered question ids for this session
-        ans_res = await db.execute(select(ResponseLog.question_id).where(ResponseLog.session_id == existing.session_id))
-        answered_ids = [r[0] for r in ans_res.all()]
-        
-        # 🌟 Re-attempt Infinite Loop Edge-Case Fix
-        if len(answered_ids) >= exam.total_questions:
-            existing.status = 'completed'
-            existing.end_time = datetime.now(timezone.utc)
-            await db.commit()
-            raise HTTPException(status_code=400, detail="Previous attempt was stuck. It has been auto-completed. Please click 'Start Test' again to begin a fresh attempt.")
-            
-        # Find next unanswered question for this topic
-        if answered_ids:
-            from sqlalchemy.sql import func
-            q_res = await db.execute(
-                select(Question).where(
-                    func.lower(Question.topic_tag) == func.lower(exam.subject),
-                    Question.question_id.not_in(answered_ids)
-                ).order_by(Question.difficulty_b.asc()).limit(1)
-            )
-        else:
-            from sqlalchemy.sql import func
-            q_res = await db.execute(
-                select(Question).where(func.lower(Question.topic_tag) == func.lower(exam.subject))
-                .order_by(Question.difficulty_b.asc()).limit(1)
-            )
-        next_q = q_res.scalar_one_or_none()
-        
-        return {
-            "session": {
-                "session_id": existing.session_id, 
-                "start_time": existing.start_time,
-                "total_questions": exam.total_questions
-            },
-            "next_question": AdaptiveQuestionResponse.model_validate(next_q) if next_q else None
-        }
+        # ALWAYS force a fresh session to ensure unique question flow and strict reset
+        existing.status = 'abandoned'
+        existing.end_time = datetime.now(timezone.utc)
+        await db.commit()
+        # Continue silently so it generates a completely new session right below!
         
     session = ExamSession(
         student_id=current_user.student_id,
@@ -89,7 +58,7 @@ async def start_exam(req: ExamStartRequest, db: AsyncSession = Depends(get_db), 
     await db.refresh(session)
     
     from sqlalchemy.sql import func
-    res = await db.execute(select(Question).where(func.lower(Question.topic_tag) == func.lower(exam.subject)).order_by(Question.difficulty_b.asc()).limit(1))
+    res = await db.execute(select(Question).where(func.lower(Question.topic_tag) == func.lower(exam.subject)).order_by(Question.difficulty_b.asc(), func.random()).limit(1))
     first_q = res.scalar_one_or_none()
     
     return {

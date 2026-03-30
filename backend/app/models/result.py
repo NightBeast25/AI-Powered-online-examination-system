@@ -8,7 +8,7 @@ class Result(Base):
     result_id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("exam_sessions.session_id", ondelete="CASCADE"), nullable=False)
     theta_score = Column(Float, nullable=False)
-    percentile = Column(Float, nullable=False)
+    percentage = Column(Float, nullable=False)
     grade = Column(String(5), nullable=False)
     topic_breakdown = Column(JSON, nullable=False)
     result_hash = Column(String(64), unique=True, nullable=False)

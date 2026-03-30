@@ -53,8 +53,4 @@ def theta_to_grade(theta: float) -> str:
     if theta >= -1.5: return "D"
     return "F"
 
-def theta_to_percentile(theta: float, all_thetas: List[float]) -> float:
-    if not all_thetas:
-        return 50.0
-    below = sum(1 for t in all_thetas if t < theta)
-    return (below / len(all_thetas)) * 100.0
+

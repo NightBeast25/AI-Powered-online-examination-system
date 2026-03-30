@@ -38,6 +38,6 @@ async def get_student_history(db: AsyncSession = Depends(get_db), current_user =
         "exam_id": r[1],
         "date": r[2].isoformat(),
         "grade": r[0].grade,
-        "percentile": r[0].percentile,
+        "percentage": r[0].percentage,
         "theta_score": r[0].theta_score
     } for r in records]

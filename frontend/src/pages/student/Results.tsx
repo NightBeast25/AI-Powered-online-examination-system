@@ -39,7 +39,7 @@ export const Results = () => {
         
         <Card className="p-6 text-center border-t-4 border-t-success bg-surface/50 backdrop-blur-md">
           <div className="text-textMuted mb-2 font-medium flex items-center justify-center gap-2">Percentage</div>
-          <div className="text-5xl font-extrabold text-success drop-shadow-sm">{result.percentile.toFixed(1)}%</div>
+          <div className="text-5xl font-extrabold text-success drop-shadow-sm">{result.percentage.toFixed(1)}%</div>
           <div className="text-xs text-textMuted mt-2">Overall Accuracy</div>
         </Card>
         

@@ -52,7 +52,7 @@ async def generate_result(db: AsyncSession, session: ExamSession) -> Result:
     result = Result(
         session_id=session.session_id,
         theta_score=session.current_theta,
-        percentile=percentage, # Hijack percentile to output exactly 'percentage' in the schema safely
+        percentage=percentage,
         grade=grade,
         topic_breakdown=topic_breakdown,
         result_hash=result_hash,

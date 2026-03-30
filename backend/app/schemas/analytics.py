@@ -15,7 +15,7 @@ class StudentAnalytics(BaseModel):
 class ExamResultResponse(BaseModel):
     session_id: int
     theta_score: float
-    percentile: float
+    percentage: float
     grade: str
     result_hash: str
     topic_breakdown: Dict[str, Any]

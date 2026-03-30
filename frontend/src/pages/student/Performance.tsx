@@ -66,8 +66,8 @@ export const Performance = () => {
                     <span className="font-medium text-textPrimary">{result.theta_score.toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2"><Trophy size={16}/> Percentile</span>
-                    <span className="font-medium text-textPrimary">{result.percentile.toFixed(1)}%</span>
+                    <span className="flex items-center gap-2"><Trophy size={16}/> Percentage</span>
+                    <span className="font-medium text-textPrimary">{result.percentage?.toFixed(1) || 0}%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-2"><Clock size={16}/> Date Taken</span>

@@ -49,7 +49,7 @@ export const Login = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-10 px-3 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-surface text-textPrimary placeholder:text-textMuted/50 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow"
               required
             />
           </div>
@@ -59,7 +59,7 @@ export const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-10 px-3 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-surface text-textPrimary placeholder:text-textMuted/50 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow"
               required
             />
           </div>

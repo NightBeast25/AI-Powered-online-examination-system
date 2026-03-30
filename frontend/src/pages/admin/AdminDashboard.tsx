@@ -32,35 +32,50 @@ export const AdminDashboard = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Welcome back, {user?.name || 'Admin'}</h1>
-        <p className="text-sm text-textMuted">{new Date().toLocaleDateString()}</p>
+    <div className="p-8 space-y-10 max-w-[1400px] mx-auto min-h-screen bg-background text-textPrimary">
+      <div className="flex items-center justify-between border-b border-border/50 pb-6">
+        <div>
+          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center gap-3">
+            👑 Command Center
+          </h1>
+          <p className="text-sm font-medium text-textMuted mt-2 uppercase tracking-widest">{new Date().toLocaleDateString()} | Welcome back, <span className="text-primary">{user?.name || 'Director'}</span></p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="p-6 border border-border bg-surface">
-          <h3 className="text-sm font-medium text-textMuted mb-2">Total Exams</h3>
-          <p className="text-3xl font-bold">{stats?.total_exams || 0}</p>
-        </Card>
-        <Card className="p-6 border border-border bg-surface">
-          <h3 className="text-sm font-medium text-textMuted mb-2">Total Students</h3>
-          <p className="text-3xl font-bold text-primary">{stats?.total_students || 0}</p>
-        </Card>
-        <Card className="p-6 border border-border bg-surface">
-          <h3 className="text-sm font-medium text-textMuted mb-2">Tests Taken</h3>
-          <p className="text-3xl font-bold">{stats?.total_tests_taken || 0}</p>
-        </Card>
-      </div>
-
-      <Card className="border border-border bg-surface rounded-xl overflow-hidden mt-8">
-        <div className="p-6 border-b border-border flex justify-between items-center">
-          <div>
-            <h2 className="text-xl font-semibold">Student Directory</h2>
-            <p className="text-sm text-textMuted">List of all registered students in the system.</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <Card className="p-8 border-l-4 border-l-primary bg-surface/80 backdrop-blur shadow-xl hover:shadow-primary/10 transition-shadow">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-sm font-bold text-textMuted uppercase tracking-wider">Total Exams Active</h3>
+            <span className="text-2xl">✅</span>
           </div>
-          <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-            {students.length} Registered
+          <p className="text-5xl font-black">{stats?.total_exams || 0}</p>
+        </Card>
+        
+        <Card className="p-8 border-l-4 border-l-secondary bg-surface/80 backdrop-blur shadow-xl hover:shadow-secondary/10 transition-shadow">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-sm font-bold text-textMuted uppercase tracking-wider">Total Students</h3>
+            <span className="text-2xl">🔥</span>
+          </div>
+          <p className="text-5xl font-black text-secondary">{stats?.total_students || 0}</p>
+        </Card>
+        
+        <Card className="p-8 border-l-4 border-l-warning bg-surface/80 backdrop-blur shadow-xl hover:shadow-warning/10 transition-shadow">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-sm font-bold text-textMuted uppercase tracking-wider">Tests Completed</h3>
+            <span className="text-2xl">📊</span>
+          </div>
+          <p className="text-5xl font-black">{stats?.total_tests_taken || 0}</p>
+        </Card>
+      </div>
+
+      <Card className="border border-border/40 bg-surface/40 backdrop-blur-md rounded-2xl overflow-hidden mt-8 shadow-lg">
+        <div className="p-8 border-b border-border/40 flex justify-between items-center bg-surface w-full">
+          <div>
+            <h2 className="text-2xl font-bold flex items-center gap-3">👥 Global Student Directory</h2>
+            <p className="text-sm font-medium text-textMuted mt-1">Full administrative control over registered users.</p>
+          </div>
+          <div className="px-5 py-2 bg-primary/20 text-primary border border-primary/30 rounded-xl text-sm font-extrabold uppercase tracking-wide shadow-sm">
+            {students.length} Registered Nodes
           </div>
         </div>
         
@@ -120,7 +135,7 @@ export const AdminDashboard = () => {
                   <th className="py-3 px-6 font-semibold text-sm">Student</th>
                   <th className="py-3 px-6 font-semibold text-sm">Exam Taken</th>
                   <th className="py-3 px-6 font-semibold text-sm">Theta Score</th>
-                  <th className="py-3 px-6 font-semibold text-sm">Percentile</th>
+                  <th className="py-3 px-6 font-semibold text-sm">Percentage</th>
                   <th className="py-3 px-6 font-semibold text-sm">Grade</th>
                   <th className="py-3 px-6 font-semibold text-sm">Date</th>
                 </tr>
@@ -136,7 +151,7 @@ export const AdminDashboard = () => {
                     <td className="py-3 px-6">
                       <div className="font-mono">{row.theta_score.toFixed(2)}</div>
                     </td>
-                    <td className="py-3 px-6">{Math.round(row.percentile)}%</td>
+                    <td className="py-3 px-6">{Math.round(row.percentage)}%</td>
                     <td className="py-3 px-6">
                       <span className={`px-2 py-1 rounded text-xs font-bold ${
                         ['A','B'].includes(row.grade) ? 'bg-green-500/20 text-green-400' : 
