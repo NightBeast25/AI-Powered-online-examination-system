@@ -24,8 +24,12 @@ export const Login = () => {
       
       toast.success('Welcome back!');
       navigate(user.role === 'admin' ? '/admin' : '/dashboard');
-    } catch (err) {
-      toast.error('Invalid credentials');
+    } catch (err: any) {
+      if (err.message === 'Network Error' || err.code === 'ERR_NETWORK') {
+        toast.error('Cannot connect to server. Is the backend running?');
+      } else {
+        toast.error('Invalid credentials');
+      }
     } finally {
       setIsLoading(false);
     }

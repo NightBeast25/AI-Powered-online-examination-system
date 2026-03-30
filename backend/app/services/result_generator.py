@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.session import ExamSession
 from app.models.result import Result
-from app.services.irt_engine import theta_to_grade, theta_to_percentile
+from app.services.irt_engine import theta_to_grade
 from app.services.analytics import get_student_topic_performance
 
 async def generate_result(db: AsyncSession, session: ExamSession) -> Result:
